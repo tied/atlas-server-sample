@@ -32,7 +32,10 @@ jobs:
       
       - name: Get tag version
         id: get_tag_version
-        run: echo ::set-output name=value::${GITHUB_REF/refs\/tags\//}
+        run: |
+          tag_version=${GITHUB_REF/refs\/tags\//}
+          echo ::set-output name=value::$(tag_version)
+          echo $(tag_version)
         
       - name: Print tag version
         run: echo ${{ steps.get_tag_version.outputs.value }}
