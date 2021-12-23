@@ -39,7 +39,7 @@ jobs:
       
       - name: Get current version
         id: get_current_version
-        run: echo ::set-output name=value::${atlas-mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\['}
+        run: echo "::set-output name=value::${atlas-mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\['}"
         
       - name: Print current version
         run: echo ${{ steps.get_current_version.outputs.value }}
@@ -63,11 +63,11 @@ jobs:
           git checkout main
           
       - name: Get head tag
-        run: echo ::set-output name=value::${atlas-mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\['}
+        run: echo "::set-output name=value::${atlas-mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\['}"
         
       - name: Get head tag
         id: get_head_tag
-        run: echo ::set-output name=value::${git tag --points-at HEAD}
+        run: echo "::set-output name=value::${git tag --points-at HEAD}"
 
       # This is a side effect action, let do it last
       - name: Commit the changes to pom.xml
