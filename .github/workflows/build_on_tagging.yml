@@ -39,7 +39,7 @@ jobs:
       
       - name: Get current version
         id: get_current_version
-        run: echo "::set-output name=value::$(atlas-mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\[')"
+        run: echo "::set-output name=value::$(atlas-mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\[' | tail -1)"
         
       - name: Print current version
         run: echo ${{ steps.get_current_version.outputs.value }}
