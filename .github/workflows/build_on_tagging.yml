@@ -83,6 +83,19 @@ jobs:
         
       - name: Print tag at head
         run: echo ${{ steps.tag_at_head.outputs.value }}
+        
+      - name: Check if should bump version
+        id: should_bump_version
+        run: echo "::set-output name=value::${{ steps.version_changed.outputs.value == 'true' && steps.tag_at_head.outputs.value == 'true' }}"
+        
+      - name: Print should bump version
+        run: echo ${{ steps.should_bump_version.outputs.value }}
+        
+      - name: Calculate new version to bump
+        id: get_new_version
+        # TODO Temporaliry us tag version
+        run: echo "::set-output name=value::${{ steps.get_tag_version.outputs.value }}"
+        if: ${{ steps.should_bump_version.outputs.value == 'true' }}
 
       # This is a side effect action, let do it last
       - name: Commit the changes to pom.xml
@@ -93,4 +106,4 @@ jobs:
           git add pom.xml
           git commit -m "Bumped version to ${{ steps.get_tag_version.outputs.value }}"
           git push
-        if: ${{ steps.version_changed.outputs.value == 'true' && steps.tag_at_head.outputs.value == 'true' }}
+        if: ${{ steps.should_bump_version.outputs.value == 'true' }}
