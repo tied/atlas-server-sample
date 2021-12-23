@@ -46,6 +46,12 @@ jobs:
 
       - name: Packaging
         run: atlas-mvn package
+        
+      - name: Archive for download
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.get_tag_name.outputs.version }}
+          path: target/*.jar
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
