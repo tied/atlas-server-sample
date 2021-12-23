@@ -1,28 +1,19 @@
-# This is a basic workflow to help you get started with Actions
-
 name: Build on tagging
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     tags:
       - '*'
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
     name: Build tagged version
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Get tag version
         id: get_tag_version
-        run: |
-          echo ::set-output name=value::${GITHUB_REF/refs\/tags\//}
-          echo ${{ steps.get_tag_version.outputs.value }}
+        run: echo ::set-output name=value::${GITHUB_REF/refs\/tags\//}
         
       - name: Get current version
         id: get_current_version
@@ -60,19 +51,18 @@ jobs:
           name: ${{ steps.get_tag_version.outputs.value }}
           path: target/*.jar
           
-      - name: Get head tag
-        id: get_head_tag
+      - name: Checkout main branch
         run: |
           git fetch
           git checkout main
-          echo ::set-output name=value::${git tag --points-at HEAD}
-        shell: bash
+        
+      - name: Get head tag
+        id: get_head_tag
+        run: echo ::set-output name=value::${git tag --points-at HEAD}
 
       # This is a side effect action, let do it last
       - name: Commit the changes to pom.xml
         run: |
-          git fetch
-          git checkout main
           git config --global user.name "GitHub Actions"
           git config --global user.email "github.action@atlasauthority.com"
           git add pom.xml
