@@ -13,7 +13,7 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
+    name: Build tagged version
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -66,6 +66,7 @@ jobs:
           git fetch
           git checkout main
           echo ::set-output name=value::${git tag --points-at HEAD}
+        shell: bash
 
       # This is a side effect action, let do it last
       - name: Commit the changes to pom.xml
