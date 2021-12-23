@@ -20,7 +20,9 @@ jobs:
     steps:
       - name: Get tag version
         id: get_tag_version
-        run: echo ::set-output name=value::${GITHUB_REF/refs\/tags\//}
+        run: |
+          echo ::set-output name=value::${GITHUB_REF/refs\/tags\//}
+          echo ${{ steps.get_tag_version.outputs.value }}
         
       - name: Get current version
         id: get_current_version
@@ -57,6 +59,13 @@ jobs:
         with:
           name: ${{ steps.get_tag_version.outputs.value }}
           path: target/*.jar
+          
+      - name: Get head tag
+        id: get_head_tag
+        run: |
+          git fetch
+          git checkout main
+          echo ::set-output name=value::${git tag --points-at HEAD}
 
       # This is a side effect action, let do it last
       - name: Commit the changes to pom.xml
@@ -68,4 +77,4 @@ jobs:
           git add pom.xml
           git commit -m "Bumped version to ${{ steps.get_tag_version.outputs.value }}"
           git push
-        if: ${{ steps.get_tag_version.outputs.value }} != ${{ steps.get_current_version.outputs.value }}
+        if: ${{ steps.get_tag_version.outputs.value }} != ${{ steps.get_current_version.outputs.value }} && ${{ steps.get_tag_version.outputs.value }} == ${{ steps.get_head_tag.outputs.value }}
