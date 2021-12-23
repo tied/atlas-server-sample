@@ -61,13 +61,13 @@ jobs:
         run: |
           git fetch
           git checkout main
-          
-      - name: Get head tag
-        run: echo "::set-output name=value::$(atlas-mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\[')"
         
       - name: Get head tag
         id: get_head_tag
-        run: echo "::set-output name=value::${git tag --points-at HEAD}"
+        run: echo "::set-output name=value::$(git tag --points-at HEAD)"
+      
+      - name: Print head tag
+        run: echo ${{ steps.get_head_tag.outputs.value }}
 
       # This is a side effect action, let do it last
       - name: Commit the changes to pom.xml
