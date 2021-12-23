@@ -61,7 +61,7 @@ jobs:
       # This is a side effect action, let do it last
       - name: Commit the changes to pom.xml
         run: |
-          git pull
+          git fetch
           git checkout main
           git config --global user.name "GitHub Actions"
           git config --global user.email "github.action@atlasauthority.com"
