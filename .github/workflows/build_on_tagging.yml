@@ -66,6 +66,7 @@ jobs:
           
       - name: Checkout main branch
         run: |
+          git stash
           git fetch
           git checkout main
         
@@ -78,7 +79,7 @@ jobs:
         
       - name: Check if tag at head
         id: tag_at_head
-        run: echo "::set-output name=value::${{ steps.get_tag_version.outputs.value != steps.get_head_tag.outputs.value }}"
+        run: echo "::set-output name=value::${{ steps.get_tag_version.outputs.value == steps.get_head_tag.outputs.value }}"
         
       - name: Print tag at head
         run: echo ${{ steps.tag_at_head.outputs.value }}
@@ -86,6 +87,7 @@ jobs:
       # This is a side effect action, let do it last
       - name: Commit the changes to pom.xml
         run: |
+          atlas-mvn -B versions:set -DnewVersion=${{ steps.get_tag_version.outputs.value }} -DgenerateBackupPoms=false
           git config --global user.name "GitHub Actions"
           git config --global user.email "github.action@atlasauthority.com"
           git add pom.xml
