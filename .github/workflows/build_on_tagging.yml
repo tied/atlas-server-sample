@@ -28,7 +28,7 @@ jobs:
         id: get_tagged_branch
         run: echo "::set-output name=value::$(git branch --contains ${{ steps.get_tag_version.outputs.value }} | tail -1 | sed 's/^[ \t]*//;s/[ \t]*$//')"
           
-      - name: Check if tagged branch is main
+      - name: Fail if tagged branch is not main
         run: |
           echo "Tagged branch ${{ steps.get_tagged_branch.outputs.value }} is not main branch. Exit now!
           exit -1
@@ -89,7 +89,7 @@ jobs:
         
       - name: Get head tag
         id: get_head_tag
-        run: echo "::set-output name=value::$(git tag --points-at HEAD)"
+        run: echo "::set-output name=value::$(git tag --points-at HEAD || tail -1)"
         if: ${{ steps.version_changed.outputs.value == 'true' }}
       
       - name: Print head tag
