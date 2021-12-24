@@ -79,11 +79,11 @@ jobs:
       - name: Print head tag
         run: echo ${{ steps.get_head_tag.outputs.value }}
         
-      - name: Check if tag at head
+      - name: Check if the new tag is at head
         id: tag_at_head
         run: echo "::set-output name=value::${{ steps.get_tag_version.outputs.value == steps.get_head_tag.outputs.value }}"
         
-      - name: Print tag at head
+      - name: Print is new tag at head
         run: echo ${{ steps.tag_at_head.outputs.value }}
         
       - name: Check if should bump version
