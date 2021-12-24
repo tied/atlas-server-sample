@@ -24,8 +24,7 @@ jobs:
         id: get_tagged_branch
         run: |
           git fetch
-          echo TAGGED_BRANCH=$(git branch --contains ${{ steps.get_tag_version.outputs.value }} | tail -1 | sed 's/^[ \t]*//;s/[ \t]*$//')
-          echo "::set-output name=value::$(TAGGED_BRANCH)"
+          echo "::set-output name=value::$(git branch --contains ${{ steps.get_tag_version.outputs.value }} | tail -1 | sed 's/^[ \t]*//;s/[ \t]*$//')"
           
       - name: Check if tagged branch is main
         run: |
