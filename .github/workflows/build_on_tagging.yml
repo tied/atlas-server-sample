@@ -34,23 +34,6 @@ jobs:
           exit -1
         if: contains(fromJSON('["main", "* main"]'), steps.get_tagged_branch.outputs.value) == 'true'
         
-      - name: Get current version
-        id: get_current_version
-        run: echo "::set-output name=value::$(atlas-mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\[' | tail -1)"
-        
-      - name: Print current version
-        run: echo ${{ steps.get_current_version.outputs.value }}
-        
-      - name: Check if version changed
-        id: version_changed
-        run: echo "::set-output name=value::${{ steps.get_tag_version.outputs.value != steps.get_current_version.outputs.value }}"
-        
-      - name: Print version changed
-        run: echo ${{ steps.version_changed.outputs.value }}
-        
-      - name: Checkout tag commit
-        run: git checkout ${{ steps.get_tag_version.outputs.value }}
-        
       - name: Install Atlas-SDK
         id: install_atlas_sdk
         run: |
@@ -67,6 +50,23 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '8'
+          
+      - name: Get current version
+        id: get_current_version
+        run: echo "::set-output name=value::$(atlas-mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\[' | tail -1)"
+        
+      - name: Print current version
+        run: echo ${{ steps.get_current_version.outputs.value }}
+        
+      - name: Check if version changed
+        id: version_changed
+        run: echo "::set-output name=value::${{ steps.get_tag_version.outputs.value != steps.get_current_version.outputs.value }}"
+        
+      - name: Print version changed
+        run: echo ${{ steps.version_changed.outputs.value }}
+        
+      - name: Checkout tag commit
+        run: git checkout ${{ steps.get_tag_version.outputs.value }}
 
       - name: Update version in pom.xml if does not match with the tag
         run: atlas-mvn -B versions:set -DnewVersion=${{ steps.get_tag_version.outputs.value }} -DgenerateBackupPoms=false
