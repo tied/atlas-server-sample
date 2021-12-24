@@ -24,13 +24,13 @@ jobs:
         id: get_tagged_branch
         run: |
           git fetch
-          echo "::set-output name=value::$(git branch --contains ${{ steps.get_tag_version.outputs.value }} | tail -1 | sed 's/^[ \t]*//;s/[ \t]*$//')"
-          
-      - name: Print tagged branch
-        run: echo "${{ steps.get_tagged_branch.outputs.value }}"
+          TAGGED_BRANCH=$(git branch --contains ${{ steps.get_tag_version.outputs.value }} | tail -1 | sed 's/^[ \t]*//;s/[ \t]*$//')
+          echo "::set-output name=value::$(TAGGED_BRANCH)"
           
       - name: Check if tagged branch is main
-        run: exit -1
+        run: |
+          echo "Tagged branch ${{ steps.get_tagged_branch.outputs.value }} is not main branch. Exit now!
+          exit -1
         if: ${{ steps.get_tagged_branch.outputs.value != 'main' }}
         
       - name: Get current version
