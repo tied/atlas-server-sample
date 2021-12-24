@@ -19,13 +19,12 @@ jobs:
         run: echo ${{ steps.get_tag_version.outputs.value }}
         
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       
       - name: Get tagged branch
         id: get_tagged_branch
-        run: |
-          git fetch
-          git pull
-          echo "::set-output name=value::$(git branch --contains ${{ steps.get_tag_version.outputs.value }} | tail -1 | sed 's/^[ \t]*//;s/[ \t]*$//')"
+        run: echo "::set-output name=value::$(git branch --contains ${{ steps.get_tag_version.outputs.value }} | tail -1 | sed 's/^[ \t]*//;s/[ \t]*$//')"
           
       - name: Check if tagged branch is main
         run: |
