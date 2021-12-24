@@ -32,7 +32,7 @@ jobs:
         run: |
           echo "Tagged branch ${{ steps.get_tagged_branch.outputs.value }} is not main branch. Exit now!
           exit -1
-        if: contains('* main', steps.get_tagged_branch.outputs.value) == 'true'
+        if: contains(fromJSON('["main", "* main"]'), steps.get_tagged_branch.outputs.value) == 'true'
         
       - name: Get current version
         id: get_current_version
@@ -85,12 +85,12 @@ jobs:
         run: |
           git stash
           git checkout main
-        if: ${{ steps.version_changed.outputs.value == 'true' }}
+        if: steps.version_changed.outputs.value == 'true'
         
       - name: Get head tag
         id: get_head_tag
         run: echo "::set-output name=value::$(git tag --points-at HEAD || tail -1)"
-        if: ${{ steps.version_changed.outputs.value == 'true' }}
+        if: steps.version_changed.outputs.value == 'true'
       
       - name: Print head tag
         run: echo ${{ steps.get_head_tag.outputs.value }}
@@ -118,4 +118,4 @@ jobs:
           git add pom.xml
           git commit -m "Bumped version to ${{ steps.get_tag_version.outputs.value }}"
           git push
-        if: ${{ steps.should_bump_version.outputs.value == 'true' }}
+        if: steps.should_bump_version.outputs.value == 'true'
