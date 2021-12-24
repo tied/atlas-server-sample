@@ -27,7 +27,7 @@ jobs:
           echo "::set-output name=value::$(git branch --contains ${{ steps.get_tag_version.outputs.value }} | tail -1 | sed 's/^[ \t]*//;s/[ \t]*$//')"
           
       - name: Print tagged branch
-        run: echo ${{ steps.get_tagged_branch.outputs.value }}
+        run: echo "${{ steps.get_tagged_branch.outputs.value }}"
           
       - name: Check if tagged branch is main
         run: exit -1
