@@ -69,10 +69,12 @@ jobs:
           git stash
           git fetch
           git checkout main
+        if: ${{ steps.version_changed.outputs.value == 'true' }}
         
       - name: Get head tag
         id: get_head_tag
         run: echo "::set-output name=value::$(git tag --points-at HEAD)"
+        if: ${{ steps.version_changed.outputs.value == 'true' }}
       
       - name: Print head tag
         run: echo ${{ steps.get_head_tag.outputs.value }}
@@ -90,12 +92,6 @@ jobs:
         
       - name: Print should bump version
         run: echo ${{ steps.should_bump_version.outputs.value }}
-        
-      - name: Calculate new version to bump
-        id: get_new_version
-        # TODO Temporaliry us tag version
-        run: echo "::set-output name=value::${{ steps.get_tag_version.outputs.value }}"
-        if: ${{ steps.should_bump_version.outputs.value == 'true' }}
 
       # This is a side effect action, let do it last
       - name: Commit the changes to pom.xml
