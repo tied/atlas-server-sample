@@ -112,7 +112,7 @@ jobs:
       # This is a side effect action, let do it last
       - name: Commit the changes to pom.xml
         run: |
-          atlas-mvn -B versions:set -DnewVersion=${{ steps.get_tag_version.outputs.value }} -DgenerateBackupPoms=false
+          git stash apply
           git config --global user.name "GitHub Actions"
           git config --global user.email "github.action@atlasauthority.com"
           git add pom.xml
