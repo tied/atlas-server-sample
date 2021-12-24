@@ -13,9 +13,6 @@ jobs:
     steps:
       - name: Check branch
         run: echo ${{ github.ref }}
-      
-      - name: Check branch
-        run: echo ${{ GITHUB_REF }}
         
       - name: Install Atlas-SDK
         id: install_atlas_sdk
