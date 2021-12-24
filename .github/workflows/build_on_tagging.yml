@@ -31,7 +31,7 @@ jobs:
         run: |
           echo "Tagged branch ${{ steps.get_tagged_branch.outputs.value }} is not main branch. Exit now!
           exit -1
-        if: ${{ steps.get_tagged_branch.outputs.value != 'main' }}
+        if: ${{ steps.get_tagged_branch.outputs.value != '* main' }}
         
       - name: Get current version
         id: get_current_version
