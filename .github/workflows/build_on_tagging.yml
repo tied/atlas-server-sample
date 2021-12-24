@@ -32,7 +32,7 @@ jobs:
         run: |
           echo "Tagged branch ${{ steps.get_tagged_branch.outputs.value }} is not main branch. Exit now!
           exit -1
-        if: contains(fromJSON('[\"main\", \"* main\"]'), steps.get_tagged_branch.outputs.value)
+        if: contains(fromJSON('["main", "* main"]'), '* main')
         
       - name: Get current version
         id: get_current_version
