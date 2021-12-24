@@ -49,10 +49,6 @@ jobs:
         
       - name: Checkout tag commit
         run: git checkout ${{ steps.get_tag_version.outputs.value }}
-
-      - name: Update version in pom.xml if does not match with the tag
-        run: atlas-mvn -B versions:set -DnewVersion=${{ steps.get_tag_version.outputs.value }} -DgenerateBackupPoms=false
-        if: ${{ steps.version_changed.outputs.value == 'true' }}
         
       - name: Install Atlas-SDK
         id: install_atlas_sdk
@@ -70,6 +66,10 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '8'
+
+      - name: Update version in pom.xml if does not match with the tag
+        run: atlas-mvn -B versions:set -DnewVersion=${{ steps.get_tag_version.outputs.value }} -DgenerateBackupPoms=false
+        if: ${{ steps.version_changed.outputs.value == 'true' }}
 
       - name: Packaging
         run: atlas-mvn package
