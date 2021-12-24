@@ -11,35 +11,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check branch
-        run: echo ${{ github.ref }}
-        
-      - name: Install Atlas-SDK
-        id: install_atlas_sdk
-        run: |
-          sudo sh -c 'echo "deb https://packages.atlassian.com/debian/atlassian-sdk-deb/ stable contrib" >> /etc/apt/sources.list'
-          wget https://packages.atlassian.com/api/gpg/key/public
-          sudo apt-key add public
-          sudo apt-get update
-          sudo apt-get install atlassian-plugin-sdk
-          atlas-version
-        shell: bash
-
-      - name: Install Java and Maven
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt'
-          java-version: '8'
-
-      - uses: actions/checkout@v2
-      
       - name: Get tag version
         id: get_tag_version
         run: echo ::set-output name=value::${GITHUB_REF/refs\/tags\//}
         
       - name: Print tag version
         run: echo ${{ steps.get_tag_version.outputs.value }}
+        
+      - uses: actions/checkout@v2
       
+      - name: Get tagged branch
+        id: get_tagged_branch
+        run: |
+          git fetch
+          echo "::set-output name=value::$(git branch --contains ${{ steps.get_tag_version.outputs.value }} | tail -1 | sed 's/^[ \t]*//;s/[ \t]*$//')"
+          
+      - name: Print tagged branch
+        run: echo ${{ steps.get_tagged_branch.outputs.value }}
+          
+      - name: Check if tagged branch is main
+        run: exit -1
+        if: ${{ steps.get_tagged_branch.outputs.value != 'main' }}
+        
       - name: Get current version
         id: get_current_version
         run: echo "::set-output name=value::$(atlas-mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\[' | tail -1)"
@@ -57,6 +50,23 @@ jobs:
       - name: Update version in pom.xml if does not match with the tag
         run: atlas-mvn -B versions:set -DnewVersion=${{ steps.get_tag_version.outputs.value }} -DgenerateBackupPoms=false
         if: ${{ steps.version_changed.outputs.value == 'true' }}
+        
+      - name: Install Atlas-SDK
+        id: install_atlas_sdk
+        run: |
+          sudo sh -c 'echo "deb https://packages.atlassian.com/debian/atlassian-sdk-deb/ stable contrib" >> /etc/apt/sources.list'
+          wget https://packages.atlassian.com/api/gpg/key/public
+          sudo apt-key add public
+          sudo apt-get update
+          sudo apt-get install atlassian-plugin-sdk
+          atlas-version
+        shell: bash
+
+      - name: Install Java and Maven
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '8'
 
       - name: Packaging
         run: atlas-mvn package
